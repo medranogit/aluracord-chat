@@ -1,34 +1,7 @@
 import { Box, Button, Text, TextField, Image } from '@skynexui/components'
+import React from 'react';
 import appConfig from '../config.json'
-
-function Globalstyle() {
-  return (
-    <style global jsx>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          list-style: none;
-        }
-        body {
-          font-family: 'Open Sans', sans-serif;
-        }
-        /* App fit Height */ 
-        html, body, #__next {
-          min-height: 100vh;
-          display: flex;
-          flex: 1;
-        }
-        #__next {
-          flex: 1;
-        }
-        #__next > * {
-          flex: 1;
-        }
-        /* ./App fit Height */ 
-      `}</style>
-  );
-}
+import { useRouter } from 'next/router';
 
 function Title(props) {
   const Tag = props.tag || 'h1';
@@ -46,29 +19,24 @@ function Title(props) {
   );
 
 }
-//Componente React
-// function HomePage() {
-//     // JSX
-//     return (
-//     <div>
-//         <Globalstyle/>
-//         <Title tag="h1">Welcome to Next.js!</Title> 
-//         <p>Aqui é um paragrafo da imersao react</p>
 
-//     </div>
-
-//     )
-//   }
 
 
 //   export default HomePage 
-
 export default function PaginaInicial() {
-  const username = 'medranogit';
+  const defaultUser = 'medranogit';
+  const [username, setUsername] = React.useState(defaultUser);
+  const [blog, setBlog] = React.useState(defaultUser);
+  const [bio, setBio] = React.useState(defaultUser);
+
+
+  const roteamento = useRouter();
+  
+  //Para saber os comandos é so ver no console log clicando duas vvezes e ira mostrar.
+  // console.log(roteamento);
 
   return (
     <>
-      <Globalstyle/>
       <Box
         styleSheet={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -97,6 +65,13 @@ export default function PaginaInicial() {
           {/* Formulário */}
           <Box
             as="form"
+            // onSubmit={
+            onSubmit={function (infosDosEventos){
+              infosDosEventos.preventDefault();
+              console.log('submitando');
+              roteamento.push('/chat')
+            }} 
+            // }
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px', 
@@ -107,7 +82,21 @@ export default function PaginaInicial() {
               {appConfig.description}
             </Text>
 
+
             <TextField
+              value={username}
+              onChange={function (event){
+                
+                console.log("Usuario digitou - " + event.target.value)
+                // console.log(event.target.value.length)
+
+                //onde esta o valor?
+                const valor = event.target.value; 
+                //Trocar o valor da variavel
+                setUsername(valor);
+                set
+
+              }}
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -118,6 +107,7 @@ export default function PaginaInicial() {
                 },
               }}
             />
+
             <Button
               type='submit'
               label='Entrar'
@@ -157,6 +147,7 @@ export default function PaginaInicial() {
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
+              
               src={`https://github.com/${username}.png`}
             />
             <Text
@@ -168,8 +159,32 @@ export default function PaginaInicial() {
                 borderRadius: '1000px'
               }}
             >
-              {username}
+              {username}     
             </Text>
+            
+            <Text
+              variant="body4"
+              styleSheet={{
+                color: appConfig.theme.colors.neutrals[200],
+
+              }}
+            >
+              {bio}     
+            </Text>
+            
+            <Button
+              label='Linkedin'
+              fullWidth
+              buttonColors={{
+                contrastColor: appConfig.theme.colors.neutrals["000"],
+                mainColor: appConfig.theme.colors.primary[500],
+                mainColorLight: appConfig.theme.colors.primary[400],
+                mainColorStrong: appConfig.theme.colors.primary[600],
+              }}
+              styleSheet={{
+                marginTop: '10px'
+              }}
+            /> 
           </Box>
           {/* Photo Area */}
         </Box>
