@@ -204,16 +204,19 @@ function MessageList(props) {
                         >
                             <Image
                                 styleSheet={{
-                                    width: '20px',
-                                    height: '20px',
+                                    width: '30px',
+                                    height: '30px',
                                     borderRadius: '50%',
-                                    display: 'inline-block',
                                     marginRight: '8px',
                                 }}
                                 src={`https://github.com/medranogit.png`}
                             />
-                            <Text tag="strong">
-
+                            <Text tag="strong"
+                                styleSheet={{
+                                    fontSize: '12px',
+                                    display: 'inline-block',
+                                }}
+                            >
                                 {mensagem.de}
 
                             </Text>
@@ -221,6 +224,7 @@ function MessageList(props) {
                                 styleSheet={{
                                     fontSize: '10px',
                                     marginLeft: '8px',
+                                    display: 'inline-block',
                                     color: appConfig.theme.colors.neutrals[300],
                                 }}
                                 tag="span"
@@ -228,8 +232,15 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                         </Box>
+                        <Text styleSheet={{
+                            fontSize: '17px',
+                            fontFamily: 'Calibri'
 
-                        {mensagem.texto}
+                        }}>
+                            {mensagem.texto}        
+                        </Text>
+
+                        
 
                     </Text>
                 )
