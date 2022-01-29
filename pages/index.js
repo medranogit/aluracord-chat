@@ -140,6 +140,9 @@ export default function PaginaInicial() {
               minHeight: '240px',
             }}
           >
+             
+            {/* <ImagemVerify/> */}
+            
             <Image
               styleSheet={{
                 borderRadius: '50%',
@@ -190,3 +193,7 @@ export default function PaginaInicial() {
     </>
   );
 }
+
+// function ImagemVerify() {
+  
+// }
