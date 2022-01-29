@@ -31,7 +31,7 @@ export default function PaginaInicial() {
 
 
   const roteamento = useRouter();
-  
+
   //Para saber os comandos é so ver no console log clicando duas vvezes e ira mostrar.
   // console.log(roteamento);
 
@@ -58,40 +58,40 @@ export default function PaginaInicial() {
             borderRadius: '5px', padding: '32px', margin: '16px',
             boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
             backgroundColor: appConfig.theme.colors.rgba[300],
-            
-            
+
+
           }}
         >
           {/* Formulário */}
           <Box
             as="form"
             // onSubmit={
-            onSubmit={function (infosDosEventos){
+            onSubmit={function (infosDosEventos) {
               infosDosEventos.preventDefault();
               console.log('submitando');
               roteamento.push('/chat')
-            }} 
+            }}
             // }
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px', 
+              width: { xs: '100%', sm: '50%' }, textAlign: 'center', marginBottom: '32px',
             }}
           >
             <Title>Welcome to our universe</Title>
-            <Text variant="body3" styleSheet={{ marginBottom: '20px', marginTop: '13px' , color: appConfig.theme.colors.neutrals[300] }}>
+            <Text variant="body3" styleSheet={{ marginBottom: '20px', marginTop: '13px', color: appConfig.theme.colors.neutrals[300] }}>
               {appConfig.description}
             </Text>
 
 
             <TextField
               value={username}
-              onChange={function (event){
-                
+              onChange={function (event) {
+
                 console.log("Usuario digitou - " + event.target.value)
                 // console.log(event.target.value.length)
 
                 //onde esta o valor?
-                const valor = event.target.value; 
+                const valor = event.target.value;
                 //Trocar o valor da variavel
                 setUsername(valor);
               }}
@@ -140,17 +140,17 @@ export default function PaginaInicial() {
               minHeight: '240px',
             }}
           >
-             
-            {/* <ImagemVerify/> */}
-            
-            <Image
+
+            <ImagemVerify user={username} />
+
+            {/* <Image
               styleSheet={{
                 borderRadius: '50%',
                 marginBottom: '16px',
               }}
               
               src={`https://github.com/${username}.png`}
-            />
+            /> */}
             <Text
               variant="body4"
               styleSheet={{
@@ -160,9 +160,9 @@ export default function PaginaInicial() {
                 borderRadius: '1000px'
               }}
             >
-              {username}     
+              {username}
             </Text>
-            
+
             <Text
               variant="body4"
               styleSheet={{
@@ -170,9 +170,10 @@ export default function PaginaInicial() {
 
               }}
             >
-              {bio}     
+              {/* onde sera a variavel da bio */}
+              {/* {bio}  */}
             </Text>
-            
+
             <Button
               label='Linkedin'
               fullWidth
@@ -185,7 +186,7 @@ export default function PaginaInicial() {
               styleSheet={{
                 marginTop: '10px'
               }}
-            /> 
+            />
           </Box>
           {/* Photo Area */}
         </Box>
@@ -194,6 +195,28 @@ export default function PaginaInicial() {
   );
 }
 
-// function ImagemVerify() {
-  
-// }
+function ImagemVerify(props) {
+  if (props.user.length < 3) {
+    return (
+      <Image
+        styleSheet={{
+          borderRadius: '50%',
+          marginBottom: '16px',
+        }}
+
+        src={`https://avatars.githubusercontent.com/u/9919?s=460&v=4`}
+      />
+    )
+  } else {
+    return (
+      <Image
+        styleSheet={{
+          borderRadius: '50%',
+          marginBottom: '16px',
+        }}
+
+        src={`https://github.com/${props.user}.png`}
+      />
+    )
+  }
+}
