@@ -5,7 +5,7 @@ import appConfig from '../config.json';
 
 
 export default function ChatPage() {
-
+    const [placeholder, setPlaceholder] = React.useState("Insira sua mensagem aqui...");
     const [mensagem, setMensagem] = React.useState('');
     const [listaMensagem, setListaMensagem] = React.useState([]);
 
@@ -21,18 +21,28 @@ export default function ChatPage() {
     - [ ] Lista de mensagens 
     */
 
-    function handleNovaMensagem(novaMensagem) {
-        const mensagem = {
-            id: listaMensagem.length + 1,
-            de: 'medranogit',
-            texto: novaMensagem,
-        };
+    function handleNovaMensagem(novaMensagem) { 
+        //Estrutura condicional para ter uma quantidade minima de caracteres para envio.
+        if (novaMensagem.length > 0) {
+            const mensagem = {
+                id: listaMensagem.length + 1,
+                de: 'medranogit',
+                texto: novaMensagem,
+            };
 
-        setListaMensagem([
-            mensagem,
-            ...listaMensagem,
-        ]);
-        setMensagem(''); // Para limpar o campo de mensagens após o enter
+            setListaMensagem([
+                mensagem,
+                ...listaMensagem,
+            ]);
+            setMensagem(''); // Para limpar o campo de mensagens após o enter
+            setPlaceholder('Insira sua mensagem aqui...');
+
+        } else {
+            setPlaceholder('Mensagem inexistente, escreva algo.');
+            setMensagem('')
+        }
+
+
     }
 
     return (
@@ -101,8 +111,8 @@ export default function ChatPage() {
                                 }
                                 // console.log(event.key);
                             }}
-
-                            placeholder="Insira sua mensagem aqui..."
+                            
+                            placeholder={placeholder}
                             type="textarea"
                             styleSheet={{
                                 width: '100%',
@@ -115,6 +125,21 @@ export default function ChatPage() {
                                 color: appConfig.theme.colors.neutrals[200],
                             }}
                         />
+                        <Button
+                            label='Enviar'
+                            buttonColors={{
+                                contrastColor: appConfig.theme.colors.neutrals["000"],
+                                mainColor: appConfig.theme.colors.primary[500],
+                                mainColorLight: appConfig.theme.colors.primary[400],
+                                mainColorStrong: appConfig.theme.colors.primary[600],
+                            }}
+                            //Sistema de envio baseado no click do botao
+                            onClick={() => {
+                                // console.log('esta sendo clicado')
+                                handleNovaMensagem(mensagem);
+                            }}
+                        />
+
                     </Box>
                 </Box>
             </Box>
@@ -142,7 +167,7 @@ function Header() {
 }
 
 function MessageList(props) {
-    console.log('MessageList', props);
+    // console.log('MessageList', props);
     return (
         <Box
             tag="ul"
@@ -154,7 +179,7 @@ function MessageList(props) {
                 color: appConfig.theme.colors.neutrals["000"],
                 marginBottom: '16px',
             }}
-        >   
+        >
             {props.mensagens.map((mensagem) => {
                 return (
 
@@ -186,7 +211,7 @@ function MessageList(props) {
                                 src={`https://github.com/medranogit.png`}
                             />
                             <Text tag="strong">
-                                
+
                                 {mensagem.de}
 
                             </Text>
