@@ -69,7 +69,8 @@ export default function PaginaInicial() {
             onSubmit={function (infosDosEventos) {
               infosDosEventos.preventDefault();
               console.log('submitando');
-              roteamento.push('/chat')
+              //Para passar o dado do index para o chat a informação de quem é o usuario
+              roteamento.push(`/chat?username=${username}`);
             }}
             // }
             styleSheet={{

@@ -1,6 +1,15 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
+import { createClient} from '@supabase/supabase-js';
+import { ThreeDots } from 'react-loading-icons'
+import { useRouter } from "next/router";
+
+//Endereços supabase
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ4OTkzNCwiZXhwIjoxOTU5MDY1OTM0fQ.mq4UggurcyECcq5qMcrT5HZWFfV0N0FXdq2x004_D5I';
+const SUPABASE_URL = 'https://xkrvolweqgnjdzpfjqpk.supabase.co';
+const supabaseClient = createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
 
 
 
@@ -8,6 +17,25 @@ export default function ChatPage() {
     const [placeholder, setPlaceholder] = React.useState("Insira sua mensagem aqui...");
     const [mensagem, setMensagem] = React.useState('');
     const [listaMensagem, setListaMensagem] = React.useState([]);
+    // useState para o loading
+    const [loading, setLoading] = React.useState(true);
+    //User atual recebendo por url da outra pagina
+    const router = useRouter();
+    const { username } = router.query;
+
+
+    React.useEffect(() =>{
+        supabaseClient
+            .from('mensagens')
+            .select('*')
+            .order('id', { ascending: false })
+            .then(({ data })=>{
+                console.log('dados da comsulta: ', data); 
+                setListaMensagem(data);
+                setLoading(false);
+            });
+    }, []);
+
 
     /*Sua lógica vai aqui
         - Usuario escreve no campo
@@ -19,22 +47,30 @@ export default function ChatPage() {
     - [X] Campo criado
     - [X] Vamos usar o onChange usa o useState (ter if pra caso seja enter pra limpar a variavel)
     - [X] Lista de mensagens 
-    - [ ] Botao de deletar
+    - [X] Banco de dados insert e consulta SUPABASE
     */
 
     function handleNovaMensagem(novaMensagem) { 
         //Estrutura condicional para ter uma quantidade minima de caracteres para envio.
         if (novaMensagem.length > 0) {
             const mensagem = {
-                id: listaMensagem.length + 1,
-                de: 'medranogit',
+                de: username,
                 texto: novaMensagem,
             };
 
-            setListaMensagem([
-                mensagem,
-                ...listaMensagem,
-            ]);
+            supabaseClient
+                .from('mensagens')
+                .insert([
+                    // Tem que ser objeto com os mesmos campos que voce escreveu no Supabase
+                    mensagem
+                ])
+                .then(( {data} ) =>{
+                    console.log('Criando mensagem: ', data);
+                    setListaMensagem([  
+                        data[0],
+                        ...listaMensagem,
+                    ]);
+                });
             setMensagem(''); // Para limpar o campo de mensagens após o enter
             setPlaceholder('Insira sua mensagem aqui...');
 
@@ -61,7 +97,6 @@ export default function ChatPage() {
                     display: 'flex',
                     flexDirection: 'column',
                     flex: 1,
-                    
                     boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
                     borderRadius: '5px',
                     backgroundColor: appConfig.theme.colors.neutrals[700],
@@ -72,6 +107,7 @@ export default function ChatPage() {
                 }}
             >
                 <Header />
+                
                 <Box
                     styleSheet={{
                         position: 'relative',
@@ -84,10 +120,28 @@ export default function ChatPage() {
                         padding: '16px',
                     }}
                 >
-
-                    <MessageList mensagens={listaMensagem} />
-                    {/* ta mudando o valor: {mensagem} */}
-
+                    {loading ? (
+                        <Box
+                        styleSheet={{
+                            position: "relative",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: "100%",
+                        }}
+                        >
+                        <ThreeDots
+                            fill={appConfig.theme.colors.neutrals[200]}
+                            height="16px"
+                        />
+                        </Box>
+                    ) : (
+                        <MessageList mensagens={listaMensagem} />
+                        // ta mudando o valor: {mensagem}
+                    )}
+                    
+                    
+                    
                     <Box
                         as="form"
                         styleSheet={{
@@ -208,8 +262,13 @@ function MessageList(props) {
                                     height: '30px',
                                     borderRadius: '50%',
                                     marginRight: '8px',
+                                    hover: {
+                                        width: '60px',
+                                        height: '60px',
+                                        borderRadius: '0%',
+                                      },
                                 }}
-                                src={`https://github.com/medranogit.png`}
+                                src={`https://github.com/${mensagem.de}.png`}
                             />
                             <Text tag="strong"
                                 styleSheet={{
