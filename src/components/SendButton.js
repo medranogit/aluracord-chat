@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from '@skynexui/components';
+import { Box, Button, Text, Image } from '@skynexui/components';
 import appConfig from '../../config.json';
 
-export function sendButton() {
+export function SendButton(props) {
     return (
         <Button
             label='Enviar'
@@ -26,7 +26,7 @@ export function sendButton() {
             //Sistema de envio baseado no click do botao
             onClick={() => {
                 // console.log('esta sendo clicado')
-                handleNovaMensagem(mensagem);
+                props.onSendTrigger()
             }}
         />
     )

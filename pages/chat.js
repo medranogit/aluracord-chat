@@ -1,21 +1,21 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
-import { createClient } from '@supabase/supabase-js';
+import { createClient} from '@supabase/supabase-js';
 import { ThreeDots } from 'react-loading-icons'
 import { useRouter } from "next/router";
 import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
-import { sendButton } from "../src/components/SendButton";
+import { SendButton } from "../src/components/SendButton";
 
 //Endereços supabase
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ4OTkzNCwiZXhwIjoxOTU5MDY1OTM0fQ.mq4UggurcyECcq5qMcrT5HZWFfV0N0FXdq2x004_D5I';
 const SUPABASE_URL = 'https://xkrvolweqgnjdzpfjqpk.supabase.co';
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 function escutaMensagem(adicionaMensagem) {
     return supabaseClient
         .from('mensagens')
-        .on('INSERT', (respostasaovivo) => {
+        .on('INSERT', (respostasaovivo) =>{
             adicionaMensagem(respostasaovivo.new);
         })
         .subscribe();
@@ -33,29 +33,29 @@ export default function ChatPage() {
     const username = router.query.username;
 
     //Pesquisar
-    React.useEffect(() => {
+    React.useEffect(() =>{
         supabaseClient
             .from('mensagens')
             .select('*')
             .order('id', { ascending: false })
-            .then(({ data }) => {
-                console.log('dados da comsulta: ', data);
+            .then(({ data })=>{
+                console.log('dados da comsulta: ', data); 
                 setListaMensagem(data);
                 setLoading(false);
             });
-
+        
         escutaMensagem((novaMensagem) => {
-            console.log('Nova mensagem' + novaMensagem);
-            setListaMensagem((valorAtualdaLista) => {
-                return [
+            console.log('Nova mensagem'+ novaMensagem);
+            setListaMensagem((valorAtualdaLista)=>{
+                return[
                     novaMensagem,
                     ...valorAtualdaLista,
                 ]
             })
         })
-
+        
     }, []);
-
+ 
 
     /*Sua lógica vai aqui
         - Usuario escreve no campo
@@ -70,7 +70,7 @@ export default function ChatPage() {
     - [X] Banco de dados insert e consulta SUPABASE
     */
 
-    function handleNovaMensagem(novaMensagem) {
+    function handleNovaMensagem(novaMensagem) { 
         //Estrutura condicional para ter uma quantidade minima de caracteres para envio.
         if (novaMensagem.length > 0) {
             const mensagem = {
@@ -84,10 +84,10 @@ export default function ChatPage() {
                     // Tem que ser objeto com os mesmos campos que voce escreveu no Supabase
                     mensagem
                 ])
-                .then(({ data }) => {
+                .then(( {data} ) =>{
                     console.log('Criando mensagem: ', data);
                 });
-
+                
             setMensagem(''); // Para limpar o campo de mensagens após o enter
             setPlaceholder('Insira sua mensagem aqui...');
 
@@ -96,12 +96,13 @@ export default function ChatPage() {
             setMensagem('')
         }
     }
-
+    
     return (
         <Box
             styleSheet={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 backgroundColor: appConfig.theme.colors.primary[500],
+                backgroundColor: appConfig.theme.colors.primary[100],
                 backgroundImage: 'url(https://i.imgur.com/PN5oUD5.jpg)',
                 backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundBlendMode: 'multiply',
                 color: appConfig.theme.colors.neutrals['000']
@@ -122,7 +123,7 @@ export default function ChatPage() {
                 }}
             >
                 <Header user={username} />
-
+                
                 <Box
                     styleSheet={{
                         position: 'relative',
@@ -137,42 +138,43 @@ export default function ChatPage() {
                 >
                     {loading ? (
                         <Box
-                            styleSheet={{
-                                position: "relative",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                height: "100%",
-                            }}
+                        styleSheet={{
+                            position: "relative",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            height: "100%",
+                        }}
                         >
-                            <ThreeDots
-                                fill={appConfig.theme.colors.neutrals[200]}
-                                height="16px"
-                            />
+                        <ThreeDots
+                            fill={appConfig.theme.colors.neutrals[200]}
+                            height="16px"
+                        />
                         </Box>
                     ) : (
                         <MessageList mensagens={listaMensagem} />
                         // ta mudando o valor: {mensagem}
                     )}
-
-
-
+                    
+                    
+                    
                     <Box
                         as="form"
                         styleSheet={{
                             display: 'flex',
                             alignItems: 'center',
                         }}
-                    >
-                        <ButtonSendSticker
+                    >   
+                        {/* BOTAO DE STICKERS */}
+                        <ButtonSendSticker 
                             //caso se usado o onStickerClick
                             //chama callback
-                            onStickerClick={(sticker) => (
+                            onStickerClick = {(sticker)=>(
                                 console.log('Salva esse sitcker no banco'),
-                                handleNovaMensagem(':sticker:' + sticker)
+                                handleNovaMensagem(':sticker:'+sticker)
                             )}
                         />
-
+                       
                         <TextField
                             //Mandando o valor mensagem para o usestate
                             value={mensagem}
@@ -191,7 +193,7 @@ export default function ChatPage() {
                                 }
                                 // console.log(event.key);
                             }}
-
+                         
                             placeholder={placeholder}
                             type="textarea"
                             styleSheet={{
@@ -205,32 +207,12 @@ export default function ChatPage() {
                                 color: appConfig.theme.colors.neutrals[200],
                             }}
                         />
-
-                        {/* <sendButton /> */}
-                        <Button
-                            label='Enviar'
-                            styleSheet={{
-                                minWidth: '40px',
-                                minHeight: '40px',
-                                fontSize: '20px',
-                                marginBottom: '8px',
-                                marginRight: '8px',
-                                lineHeight: '0',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}
-                            buttonColors={{
-                                contrastColor: appConfig.theme.colors.neutrals["000"],
-                                mainColor: appConfig.theme.colors.primary[500],
-                                mainColorLight: appConfig.theme.colors.primary[400],
-                                mainColorStrong: appConfig.theme.colors.primary[600],
-                            }}
-                            //Sistema de envio baseado no click do botao
-                            onClick={() => {
-                                // console.log('esta sendo clicado')
-                                handleNovaMensagem(mensagem);
-                            }}         
+                        {/* BOTAO DE ENVIO */}
+                        < SendButton 
+                            onSendTrigger = {() =>(
+                                console.log('Salva esse sitcker no banco'   ),
+                                handleNovaMensagem(mensagem)
+                            )}
                         />
                     </Box>
                 </Box>
@@ -242,18 +224,23 @@ export default function ChatPage() {
 
 function Header(props) {
     return (
-        <>
-            <Box styleSheet={{
-                width: '100%',
-                marginBottom: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-            }} >
+        <>  
+            <Box styleSheet={{ 
+                width: '100%', 
+                marginBottom: '16px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'space-between' 
+                }} >
                 <Text variant='heading5'>
                     Chat - {props.user}
                 </Text>
+
                 <Button
+                styleSheet={{
+                    backgroundColor: appConfig.theme.colors.primary[500],
+                    color:'white'
+                }}
                     variant='tertiary'
                     colorVariant='neutral'
                     label='Logout'
@@ -308,7 +295,7 @@ function MessageList(props) {
                                         width: '60px',
                                         height: '60px',
                                         borderRadius: '0%',
-                                    },
+                                      },
                                 }}
                                 src={`https://github.com/${mensagem.de}.png`}
                             />
@@ -333,31 +320,29 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                         </Box>
-                        {/* Estrutura Condicional */}
+                        {/* Estrutura Condicional */} 
 
                         {/* If começar com ':sticker:' */}
 
                         {mensagem.texto.startsWith(':sticker:')
-                            ? (
-                                <Image styleSheet={{
-                                    maxWidth: '150px',
-                                }} src={mensagem.texto.replace(':sticker:', '')} />
-                                //else
-                            ) : (
-                                <Text styleSheet={{
-                                    fontSize: '17px',
-                                    fontFamily: 'Calibri'
-
-                                }}>
-                                    {mensagem.texto}
-                                </Text>
-                            )}
+                        ? (
+                            <Image styleSheet={{
+                                maxWidth:'150px',
+                            }} src={mensagem.texto.replace(':sticker:', '')}/>
+                        //else
+                        ):(
+                            <Text styleSheet={{
+                                fontSize    : '17px',
+                                fontFamily: 'Calibri'
+    
+                            }}>
+                                {mensagem.texto}        
+                            </Text>
+                        )}
 
                     </Text>
                 )
             })}
-
-
         </Box>
     )
 }

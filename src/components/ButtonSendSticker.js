@@ -74,12 +74,14 @@ export function ButtonSendSticker(props) {
             {/* Mapeou a lista usando o 'map' */}
             {appConfig.stickers.map((sticker) => (
               <Text
+              
                 onClick={() => {
                   console.log('[DENTRO DO COMPONENTE] Clicou no sticker:', sticker);
                   if (Boolean(props.onStickerClick)) {
                     props.onStickerClick(sticker);
                   }
                 }}
+
                 tag="li" key={sticker}
                 styleSheet={{
                   width: '50%',
