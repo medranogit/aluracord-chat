@@ -20,11 +20,9 @@ function Title(props) {
 
 }
 
-
-
 //   export default HomePage 
 export default function PaginaInicial() {
-  const defaultUser = 'medranogit';
+  const defaultUser = '';
   const [username, setUsername] = React.useState(defaultUser);
   const [blog, setBlog] = React.useState(defaultUser);
   const [bio, setBio] = React.useState(defaultUser);

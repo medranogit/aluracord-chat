@@ -1,17 +1,25 @@
 import { Box, Text, TextField, Image, Button } from '@skynexui/components';
 import React from 'react';
 import appConfig from '../config.json';
-import { createClient} from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import { ThreeDots } from 'react-loading-icons'
 import { useRouter } from "next/router";
+import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
+import { sendButton } from "../src/components/SendButton";
 
 //Endereços supabase
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzQ4OTkzNCwiZXhwIjoxOTU5MDY1OTM0fQ.mq4UggurcyECcq5qMcrT5HZWFfV0N0FXdq2x004_D5I';
 const SUPABASE_URL = 'https://xkrvolweqgnjdzpfjqpk.supabase.co';
-const supabaseClient = createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-
-
+function escutaMensagem(adicionaMensagem) {
+    return supabaseClient
+        .from('mensagens')
+        .on('INSERT', (respostasaovivo) => {
+            adicionaMensagem(respostasaovivo.new);
+        })
+        .subscribe();
+}
 
 export default function ChatPage() {
     const [placeholder, setPlaceholder] = React.useState("Insira sua mensagem aqui...");
@@ -21,19 +29,31 @@ export default function ChatPage() {
     const [loading, setLoading] = React.useState(true);
     //User atual recebendo por url da outra pagina
     const router = useRouter();
-    const { username } = router.query;
+    // const { username } = router.query;
+    const username = router.query.username;
 
-
-    React.useEffect(() =>{
+    //Pesquisar
+    React.useEffect(() => {
         supabaseClient
             .from('mensagens')
             .select('*')
             .order('id', { ascending: false })
-            .then(({ data })=>{
-                console.log('dados da comsulta: ', data); 
+            .then(({ data }) => {
+                console.log('dados da comsulta: ', data);
                 setListaMensagem(data);
                 setLoading(false);
             });
+
+        escutaMensagem((novaMensagem) => {
+            console.log('Nova mensagem' + novaMensagem);
+            setListaMensagem((valorAtualdaLista) => {
+                return [
+                    novaMensagem,
+                    ...valorAtualdaLista,
+                ]
+            })
+        })
+
     }, []);
 
 
@@ -50,7 +70,7 @@ export default function ChatPage() {
     - [X] Banco de dados insert e consulta SUPABASE
     */
 
-    function handleNovaMensagem(novaMensagem) { 
+    function handleNovaMensagem(novaMensagem) {
         //Estrutura condicional para ter uma quantidade minima de caracteres para envio.
         if (novaMensagem.length > 0) {
             const mensagem = {
@@ -64,13 +84,10 @@ export default function ChatPage() {
                     // Tem que ser objeto com os mesmos campos que voce escreveu no Supabase
                     mensagem
                 ])
-                .then(( {data} ) =>{
+                .then(({ data }) => {
                     console.log('Criando mensagem: ', data);
-                    setListaMensagem([  
-                        data[0],
-                        ...listaMensagem,
-                    ]);
                 });
+
             setMensagem(''); // Para limpar o campo de mensagens após o enter
             setPlaceholder('Insira sua mensagem aqui...');
 
@@ -78,8 +95,6 @@ export default function ChatPage() {
             setPlaceholder('Mensagem inexistente, escreva algo.');
             setMensagem('')
         }
-
-
     }
 
     return (
@@ -106,8 +121,8 @@ export default function ChatPage() {
                     padding: '32px',
                 }}
             >
-                <Header />
-                
+                <Header user={username} />
+
                 <Box
                     styleSheet={{
                         position: 'relative',
@@ -122,26 +137,26 @@ export default function ChatPage() {
                 >
                     {loading ? (
                         <Box
-                        styleSheet={{
-                            position: "relative",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            height: "100%",
-                        }}
+                            styleSheet={{
+                                position: "relative",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                height: "100%",
+                            }}
                         >
-                        <ThreeDots
-                            fill={appConfig.theme.colors.neutrals[200]}
-                            height="16px"
-                        />
+                            <ThreeDots
+                                fill={appConfig.theme.colors.neutrals[200]}
+                                height="16px"
+                            />
                         </Box>
                     ) : (
                         <MessageList mensagens={listaMensagem} />
                         // ta mudando o valor: {mensagem}
                     )}
-                    
-                    
-                    
+
+
+
                     <Box
                         as="form"
                         styleSheet={{
@@ -149,6 +164,15 @@ export default function ChatPage() {
                             alignItems: 'center',
                         }}
                     >
+                        <ButtonSendSticker
+                            //caso se usado o onStickerClick
+                            //chama callback
+                            onStickerClick={(sticker) => (
+                                console.log('Salva esse sitcker no banco'),
+                                handleNovaMensagem(':sticker:' + sticker)
+                            )}
+                        />
+
                         <TextField
                             //Mandando o valor mensagem para o usestate
                             value={mensagem}
@@ -167,7 +191,7 @@ export default function ChatPage() {
                                 }
                                 // console.log(event.key);
                             }}
-                            
+
                             placeholder={placeholder}
                             type="textarea"
                             styleSheet={{
@@ -181,8 +205,21 @@ export default function ChatPage() {
                                 color: appConfig.theme.colors.neutrals[200],
                             }}
                         />
+
+                        {/* <sendButton /> */}
                         <Button
                             label='Enviar'
+                            styleSheet={{
+                                minWidth: '40px',
+                                minHeight: '40px',
+                                fontSize: '20px',
+                                marginBottom: '8px',
+                                marginRight: '8px',
+                                lineHeight: '0',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
                             buttonColors={{
                                 contrastColor: appConfig.theme.colors.neutrals["000"],
                                 mainColor: appConfig.theme.colors.primary[500],
@@ -193,9 +230,8 @@ export default function ChatPage() {
                             onClick={() => {
                                 // console.log('esta sendo clicado')
                                 handleNovaMensagem(mensagem);
-                            }}
+                            }}         
                         />
-
                     </Box>
                 </Box>
             </Box>
@@ -204,12 +240,18 @@ export default function ChatPage() {
 }
 
 
-function Header() {
+function Header(props) {
     return (
         <>
-            <Box styleSheet={{ width: '100%', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
+            <Box styleSheet={{
+                width: '100%',
+                marginBottom: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+            }} >
                 <Text variant='heading5'>
-                    Chat
+                    Chat - {props.user}
                 </Text>
                 <Button
                     variant='tertiary'
@@ -266,7 +308,7 @@ function MessageList(props) {
                                         width: '60px',
                                         height: '60px',
                                         borderRadius: '0%',
-                                      },
+                                    },
                                 }}
                                 src={`https://github.com/${mensagem.de}.png`}
                             />
@@ -291,15 +333,25 @@ function MessageList(props) {
                                 {(new Date().toLocaleDateString())}
                             </Text>
                         </Box>
-                        <Text styleSheet={{
-                            fontSize: '17px',
-                            fontFamily: 'Calibri'
+                        {/* Estrutura Condicional */}
 
-                        }}>
-                            {mensagem.texto}        
-                        </Text>
+                        {/* If começar com ':sticker:' */}
 
-                        
+                        {mensagem.texto.startsWith(':sticker:')
+                            ? (
+                                <Image styleSheet={{
+                                    maxWidth: '150px',
+                                }} src={mensagem.texto.replace(':sticker:', '')} />
+                                //else
+                            ) : (
+                                <Text styleSheet={{
+                                    fontSize: '17px',
+                                    fontFamily: 'Calibri'
+
+                                }}>
+                                    {mensagem.texto}
+                                </Text>
+                            )}
 
                     </Text>
                 )
