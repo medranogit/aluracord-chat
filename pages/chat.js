@@ -12,7 +12,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5v
 const SUPABASE_URL = 'https://xkrvolweqgnjdzpfjqpk.supabase.co';
 const supabaseClient = createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-function escutaMensagem(adicionaMensagem) {
+function escutaMensagem(adicionaMensagem) { 
     return supabaseClient
         .from('mensagens')
         .on('INSERT', (respostasaovivo) =>{
@@ -257,7 +257,7 @@ function MessageList(props) {
         <Box
             tag="ul"
             styleSheet={{
-                overflow: 'scroll',
+                overflowY: 'scroll',
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 flex: 1,

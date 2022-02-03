@@ -206,7 +206,7 @@ function ImagemVerify(props) {
         src={`https://avatars.githubusercontent.com/u/9919?s=460&v=4`}
       />
     )
-  } else {
+  }else {
     return (
       <Image
         styleSheet={{
